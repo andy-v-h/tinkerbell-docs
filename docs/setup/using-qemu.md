@@ -100,28 +100,24 @@ This installation method also requires Docker and [`docker-compose`](https://doc
     mv shack /usr/local/bin
     ```
 
-4. Create our internal Tinkerbell network (optional).
+4. Create shack configuration.
 
+    Change the bridgeName: from `plunder` to `tinkerbell`, then 
     ```
-    sudo ip link add tinkerbell type bridge
-    ```
-
-5. Create shack configuration.
-
-    ```
-    shack example > shack.yaml
+    shack example | sed -e's/plunder/tinkerbell/' > shack.yaml
     ```
 
-6. Edit and apply the configuration.
+5. Edit and apply the configuration.
 
-    Change the bridgeName: from `plunder` to `tinkerbell`, then run `shack network create`. This will create a new interface on our Tinkerbell bridge
-
+    Create a new interface on our Tinkerbell bridge
     Run `shack network create`
 
-7. Test virtual machine creation.
+6. Test virtual machine creation.
 
+    Note that for `shack` the vm uuid should be a 3 bye hex number.
     ```
-    shack vm start --id f0cb3c -v
+    export SHACK_VM_ID=$(openssl rand -hex 3) # f0cb3c
+    shack vm start --id $SHACK_VM_ID -v
     <...>
     shack VM configuration
     Network Device:	plndrVM-f0cb3c
@@ -135,7 +131,7 @@ This installation method also requires Docker and [`docker-compose`](https://doc
     ```
     11: tinkerbell: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default 
         link/ether 2a:27:61:44:d2:07 brd ff:ff:ff:ff:ff:ff
-        inet 192.168.1.1/24 brd 192.168.1.255 scope global plunder
+        inet 192.168.1.1/24 brd 192.168.1.255 scope global tinkerbell
            valid_lft forever preferred_lft forever
         inet6 fe80::bcc7:caff:fe63:8016/64 scope link 
            valid_lft forever preferred_lft forever
@@ -150,7 +146,7 @@ This installation method also requires Docker and [`docker-compose`](https://doc
     Kill the VM:
 
     ```
-    shack vm stop --id f0cb3c -d
+    shack vm stop --id $SHACK_VM_ID -d
     ```
 
 8. Install sandbox dependencies.
